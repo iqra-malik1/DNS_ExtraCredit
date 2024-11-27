@@ -70,8 +70,7 @@ def dns_query(type, name, server):
         # Example: The QR field is located in the second byte of the DNS header, with its most significant bit being the leftmost bit of this byte. Since each byte contains 8 bits, 
         # shifting the value of the QR field left by 15 bits moves it to the correct position in the 16-bit value that represents the combination of several fields in the DNS header.
 
-        header = struct.pack('!HHHHHH', ID, QR << 15 | OPCODE << 13 | AA << 9 | TC << 8 | RD << 7 | RA << 6 | Z << 5  | RCODE, QDCOUNT, ANCOUNT, NSCOUNT, ARCOUNT)
-
+    header = struct.pack('!HHHHHH', ID, QR << 15 | OPCODE << 13 | AA << 9 | TC << 8 | RD << 7 | RA << 6 | Z << 5  | RCODE, QDCOUNT, ANCOUNT, NSCOUNT, ARCOUNT)
 
     # Encode the QNAME
     qname_parts = name.split('.') # How can we easily split the string?
@@ -131,9 +130,9 @@ def dns_query(type, name, server):
         name = '.'.join(name_parts)
 
         # Parse the type, class, TTL, and RDLENGTH
-        type, cls, ttl, rdlength = struct.unpack('!HHIH', response_answer[offset:offset+7]) # What is the offset value in bytes? Remember 'H' represent 2 bytes, and 'I' represents one byte, we declared '!HHIH'. 
+        type, cls, ttl, rdlength = struct.unpack('!HHIH', response_answer[offset:offset+10]) # What is the offset value in bytes? Remember 'H' represent 2 bytes, and 'I' represents one byte, we declared '!HHIH'. 
         
-        offset += 7 # Same value as just calculated
+        offset += 10 # Same value as just calculated
 
         # Parse the RDATA
         rdata = response_answer[offset:offset+rdlength]
