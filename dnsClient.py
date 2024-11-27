@@ -2,11 +2,6 @@ import argparse
 import socket
 import struct
 
-        # Useful resources to solve this lab:
-        # 1. https://datatracker.ietf.org/doc/html/rfc1034
-        # 2. https://datatracker.ietf.org/doc/html/rfc1035
-        # 3. Kurose/Ross Book!
-
 def dns_query(type, name, server):
     # Create a UDP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -70,8 +65,8 @@ def dns_query(type, name, server):
         # Example: The QR field is located in the second byte of the DNS header, with its most significant bit being the leftmost bit of this byte. Since each byte contains 8 bits, 
         # shifting the value of the QR field left by 15 bits moves it to the correct position in the 16-bit value that represents the combination of several fields in the DNS header.
 
-        header = struct.pack('!HHHHHH', ID, QR << 15 | OPCODE << 11 | AA << 10 | TC << 9 | RD << 8 | RA << 7 | Z << 4  | RCODE, QDCOUNT, ANCOUNT, NSCOUNT, ARCOUNT)
-
+    header = struct.pack('!HHHHHH', ID, QR << 15 | OPCODE << 11 | AA << 10 | TC << 9 | RD << 8 | RA << 7 | Z << 4 | RCODE, QDCOUNT, ANCOUNT, NSCOUNT, ARCOUNT)
+    
     # Encode the QNAME
     qname_parts = name.split('.') # How can we easily split the string?
     qname_encoded_parts = [struct.pack('B', len(part)) + part.encode('ascii') for part in qname_parts] # Make sure it's encoded as a sequence of the right character encoding type (lowercase)
@@ -102,7 +97,7 @@ def dns_query(type, name, server):
     ID, FLAGS, QDCOUNT, ANCOUNT, NSCOUNT, ARCOUNT = struct.unpack('!HHHHHH', response_header) # We are unpacking the binary data of the response header into individual values representing the fields of the DNS header.
     
     # Parse the response question section (same as query)
-    response_question = data[12:12+len(question)] # The data variable starts immediately after the header section, so what is it's index? Note the two '??' '??' will be the same value as we start at a specific index and then go for the entire length of the binary data received. 
+    response_question = data[12:12+len(question)]
     assert response_question == question
 
     # Parse the response answer section
@@ -141,7 +136,7 @@ def dns_query(type, name, server):
         if type == 1: # Lookup Type value
             # A record (IPv4 address)
             ipv4 = socket.inet_ntop(socket.AF_INET, rdata)
-            print(f'{name} has IPv4 address {ipv4}')\
+            print(f'{name} has IPv4 address {ipv4}')
             return ipv4
         elif type == 28: # Lookup Type value
             # AAAA record (IPv6 address)
