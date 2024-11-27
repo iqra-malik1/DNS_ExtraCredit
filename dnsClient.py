@@ -98,7 +98,7 @@ def dns_query(type, name, server):
     data, _ = sock.recvfrom(4096) # This is the buffer size we have selected, 4096 Bytes is the maximum amount of data to be received at once.
     
     # Parse the response header
-    response_header = data[:4096] # What is the size of the DNS response header in bytes? 
+    response_header = data[:12] # What is the size of the DNS response header in bytes? 
     ID, FLAGS, QDCOUNT, ANCOUNT, NSCOUNT, ARCOUNT = struct.unpack('!HHHHHH', response_header) # We are unpacking the binary data of the response header into individual values representing the fields of the DNS header.
     
     # Parse the response question section (same as query)
@@ -138,12 +138,12 @@ def dns_query(type, name, server):
         rdata = response_answer[offset:offset+rdlength]
         offset += rdlength
 
-        if type == "A": # Lookup Type value
+        if type == 1: # Lookup Type value
             # A record (IPv4 address)
             ipv4 = socket.inet_ntop(socket.AF_INET, rdata)
             print(f'{name} has IPv4 address {ipv4}')\
             return ipv4
-        elif type == "AAAA": # Lookup Type value
+        elif type == 28: # Lookup Type value
             # AAAA record (IPv6 address)
             ipv6 = socket.inet_ntop(socket.AF_INET6, rdata)
             print(f'{name} has IPv6 address {ipv6}')
